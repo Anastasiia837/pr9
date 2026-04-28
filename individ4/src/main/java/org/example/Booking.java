@@ -26,7 +26,7 @@ public class Booking extends Thread {
         synchronized (hotel) {
             while (!hotel.checkIn(this)) {
                 status = BookingStatus.WAITING;
-                System.out.println("  ⏳ " + surname + " чекає на вільне місце...");
+                System.out.println(surname + " чекає на вільне місце...");
                 try {
                     hotel.wait();
                 } catch (InterruptedException e) {
