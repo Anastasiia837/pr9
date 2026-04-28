@@ -1,37 +1,67 @@
 package org.example;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 public class Main {
-    static void main(String[] args) throws InterruptedException {
-        Hotel hotel = new Hotel(2);
+    public static void main(String[] args) throws InterruptedException {
+        Scanner scanner = new Scanner(System.in);
 
-        Booking ivanov = new Booking("Іванов", 3000, hotel);
-        Booking petrenko = new Booking("Петренко", 4000, hotel);
-        Booking shevchenko = new Booking("Шевченко", 2000, hotel);
-        Booking kovalenko = new Booking("Коваленко", 1500, hotel);
+        System.out.print("Введіть місткість готелю: ");
+        int capacity = scanner.nextInt();
+        Hotel hotel = new Hotel(capacity);
 
-        System.out.println("Готель відкривається (місткість: 2)\n");
+        List<Booking> bookings = new ArrayList<>();
 
-        ivanov.start();
-        Thread.sleep(500);
+        System.out.println("\nМЕНЮ");
+        System.out.println("1. Додати гостя");
+        System.out.println("2. Почати заселення");
+        System.out.println();
 
-        petrenko.start();
-        Thread.sleep(500);
+        while (true) {
+            System.out.print("Оберіть дію: ");
+            int choice = scanner.nextInt();
 
-        shevchenko.start();
-        Thread.sleep(500);
+            if (choice == 1) {
+                System.out.print("Ім'я гостя: ");
+                String name = scanner.next();
+                System.out.print("Час проживання (мс): ");
+                long stayTime = scanner.nextLong();
 
-        kovalenko.start();
-        Thread.sleep(1500);
+                Booking booking = new Booking(name, stayTime, hotel);
+                bookings.add(booking);
+                System.out.println("Гіст додано\n");
 
-        Booking found = hotel.findBySurname("Іванов");
-        System.out.println("\nПошук «Іванов»: " +
+            } else if (choice == 2) {
+                if (bookings.isEmpty()) {
+                    System.out.println("Спочатку додайте гостей!\n");
+                    continue;
+                }
+                break;
+            } else {
+                System.out.println("Невірний вибір\n");
+            }
+        }
+
+        System.out.println("\nГотель відкривається (місткість: " + capacity + ")\n");
+
+        for (Booking booking : bookings) {
+            booking.start();
+            Thread.sleep(500);
+        }
+
+        System.out.print("\nШукати гостя (прізвище): ");
+        String searchName = scanner.next();
+        Booking found = hotel.findBySurname(searchName);
+        System.out.println("Пошук «" + searchName + "»: " +
                 (found != null ? "проживає" : "не знайдений"));
 
-        ivanov.join();
-        petrenko.join();
-        shevchenko.join();
-        kovalenko.join();
+        for (Booking booking : bookings) {
+            booking.join();
+        }
 
-        System.out.println("\nУсі гості виселилися. Готель закривається.");
+        System.out.println("\nУсі гості виселилися. Готель забрали за долги");
+        scanner.close();
     }
 }
